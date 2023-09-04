@@ -1,0 +1,160 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Quickpayments Demo</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="quickpayments.umd.js"></script>
+    <link rel="stylesheet" href="quickpayments.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <img style="float:right;" src="pmn-logo-full.png" alt="Phoenix Managed Networks" />
+                <h1 class="display-4">QuickPaymentsJs</h1>
+                <p class="lead">
+                    QuickPayments is a set of technologies which work together to enable Merchants to integrate a payment experience directly into their web applications without taking the consumer off of their web site while maintaining PCI compliance.
+                </p>
+            </div>
+        </div>
+        <form>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="testKey">QPJS Key</label>
+                <div class="col">
+                    <input class="form-control" type="text" name="test-key" id="testKey" aria-describedby="keyHelp" placeholder="QPJS API Key" />
+                    <small id="keyHelp" class="form-text text-muted">Get from the Payment Gateway UI.</small>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="testUrl">Post URL</label>
+                <div class="col">
+                    <input class="form-control" type="text" name="test-url" id="testUrl" aria-describedby="urlHelp" placeholder="Your server url" />
+                    <small id="urlHelp" class="form-text text-muted">The full URL (including the initial https://) to the merchant's server, e.g. http://localhost:8000/payment.</small>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="testAmt">Total Amount</label>
+                <div class="col">
+                    <input class="form-control" type="number" name="test-amount" id="testAmt" placeholder="Total Transaction Amount" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2">Accept Checks</div>
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="test-checks" id="testChecks">
+                        <label class="form-check-label" for="testChecks">
+                        Check to Accept Checks
+                    </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2">Capture Billing Zip</div>
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="test-checks" id="testZip">
+                        <label class="form-check-label" for="testZip">
+                        This is ignored if you are already capturing the billing address. If this is checked though it will make the zip code required even if the billing address is optional.
+                    </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label" for="testAmt">Icon Color</label>
+                <div class="col">
+                    <input class="form-control" type="text" name="test-color" id="testColor" aria-describedby="colorHelp" placeholder="CSS Valid Color" />
+                    <small id="colorHelp" class="form-text text-muted">A valid CSS color or hex value, e.g. red, #FF0000, inherit, etc.</small>
+                </div>
+            </div>
+            <button class="btn" type="button" onclick="readValues()">Redraw</button>
+        </form>
+
+        <hr/>
+
+        <div id="app">
+            <h5>Collect No Addresses</h5>
+            <h6>With custom form input for special data collection.</h6>
+            <payment test="demo" :total-amount="total" :api-key="apiKey" :post-url="postUrl" :accept-checks="acceptChecks" :accept-cards="acceptCards" :capture-zip="captureZip" :icon-color="iconColor">
+                <div slot="add-to-card" class="form-row" style="margin-left:-.05rem;margin-right:-.1rem;">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span style="padding-right: 1rem;" class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
+                        </div>
+                        <qp-input required type="text" class="form-control" placeholder="Please enter your user name (this is a custom form input)" aria-label="User Name" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+            </payment>
+
+            <h5>Collect Billing Address (Optional)</h5>
+            <h6>With custom success page.</h6>
+            <payment test="demo" :total-amount="total" :api-key="apiKey" :post-url="postUrl" :accept-checks="acceptChecks" :accept-cards="acceptCards" billing-address="true" :capture-zip="captureZip" :icon-color="iconColor">
+                <div slot="transaction-success">
+                    <h3 class="text-success"><i class="fa fa-exclamation-circle"></i> Thank you!</h3>
+                </div>
+            </payment>
+
+            <h5>Collect Shipping Address (Required)</h5>
+            <payment test="demo" :total-amount="total" :api-key="apiKey" :post-url="postUrl" :accept-checks="acceptChecks" :accept-cards="acceptCards" shipping-address="required" :capture-zip="captureZip" :icon-color="iconColor">
+            </payment>
+
+            <h5>Modal Collect Both Billing (Required) & Shipping Addresses (Optional)</h5>
+            <h6>With custom footer showing links for terms of use and privacy policy.</h6>
+            <payment-modal test="demo" :total-amount="total" :api-key="apiKey" :post-url="postUrl" :accept-checks="acceptChecks" :accept-cards="acceptCards" billing-address="req" shipping-address="true" :capture-zip="captureZip" :icon-color="iconColor">
+                <div slot="modal-footer" style="width: 100%">
+                    <small class="float-left text-center" style="width: 100%"><a href="https://policies.google.com/terms?hl=en" target="_blank">Terms</a> <a href="https://policies.google.com/privacy?hl=en" target="_blank" class="ml-5">Privacy</a></small>
+                </div>
+            </payment-modal>
+
+        </div>
+        <p>&nbsp;</p>
+    </div>
+
+    <script>
+        var qp = new Vue({
+            components: {
+                payment: quickpayments.payment,
+                qpInput: quickpayments.quickPaymentsInput,
+                paymentModal: quickpayments
+            },
+
+            data: {
+                apiKey: '', //Add QuicPay API key aquired from Merchant here between quotes
+                postUrl: '', //Add PostURL betwen quotes Ex. (https://GatewayURL/api/v2/transactions/bcp)
+                total: 2.00,
+                acceptCards: true,
+                acceptChecks: false,
+                captureZip: false,
+                iconColor: 'inherit',
+            },
+
+            mounted: function() {
+                document.getElementById('testKey').value = this.apiKey;
+                document.getElementById('testUrl').value = this.postUrl;
+                document.getElementById('testAmt').value = this.total;
+                document.getElementById('testColor').value = this.iconColor;
+            }
+
+        }).$mount('#app');
+
+        function readValues() {
+            qp.apiKey = document.getElementById('testKey').value;
+            qp.postUrl = document.getElementById('testUrl').value;
+            qp.total = document.getElementById('testAmt').value;
+            qp.acceptChecks = document.getElementById('testChecks').checked;
+            qp.captureZip = document.getElementById('testZip').checked;
+            qp.iconColor = document.getElementById('testColor').value;
+        }
+    </script>
+</body>
+
+</html>
