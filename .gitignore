@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 # Ignores developer settings.
 appsettings.Development.json
+
+# Ignores MacOS Index folders.
+__MACOSX/
