@@ -1,0 +1,5 @@
+﻿enum CountryCodes
+{
+    USA,
+    CAN
+}

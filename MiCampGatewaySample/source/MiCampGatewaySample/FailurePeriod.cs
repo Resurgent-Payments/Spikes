@@ -1,0 +1,5 @@
+﻿enum FailurePeriod
+{
+    Day,
+    Week
+}
