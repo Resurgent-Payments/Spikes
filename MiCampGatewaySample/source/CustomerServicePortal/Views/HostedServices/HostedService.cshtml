@@ -1,0 +1,66 @@
+﻿@using CustomerServicePortal.Controllers;
+@using HSP;
+@model HostedServiceRm.HostedServiceDashboard
+
+@{
+    ViewData["Title"] = "Hosted Service";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Hosted Services</h1>
+    <h2>@Model.Name</h2>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h2>Service Levels</h2>
+
+            <form class="row row-cols-lg-auto g-3 align-items-center" asp-area="" asp-controller="HostedServices" asp-action="AddServiceLevel" asp-route-hostedServiceId="@Model.HostedServiceId">
+                <input type="hidden" value="@Guid.NewGuid()" name="ServiceLevelId" />
+                <div class="col-12">
+                    <label class="form-label" for="newServiceLevelDescription">Username</label>
+                    <input type="text" class="form-control" id="newServiceLevelDescription" name="Description" placeholder="Username">
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label" for="newServiceLevelPrice">Price</label>
+                    <input type="text" class="form-control" id="newServiceLevelPrice" name="Price" placeholder="Price">
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-outline-primary">Submit</button>
+                </div>
+            </form>
+
+
+            <table class="table table-sm table-striped">
+                @foreach (var level in Model.ServiceLevels)
+                {
+                    <tr>
+                        <td>@level.Description</td>
+                        <td>@level.Price.ToString("C")</td>
+                        <td>
+                            @if (level.ServiceLevelId == Model.DefaultServiceLevel)
+                            {
+                                <span class="text-secondary">Default Level</span>
+                            }
+                            else
+                            {
+                                <form asp-area="" asp-controller="HostedServices" asp-action="SetDefaultServiceLevel" asp-route-hostedServiceId="@Model.HostedServiceId" asp-route-serviceLevelId="@level.ServiceLevelId">
+                                    <button type="submit" class="btn btn-outline-secondary">Set as Default</button>
+                                </form>
+                            }
+                        </td>
+                        <td>
+                            <form asp-area="" asp-controller="HostedServices" asp-action="RemoveServiceLevel" asp-route-hostedServiceId="@Model.HostedServiceId" asp-route-serviceLevelId="@level.ServiceLevelId">
+                                <button type="submit" class="btn btn-outline-danger">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </table>
+
+        </div>
+    </div>
+</div>

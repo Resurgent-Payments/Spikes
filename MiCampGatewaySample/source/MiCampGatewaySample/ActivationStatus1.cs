@@ -1,4 +1,5 @@
-﻿enum ActivationStatus
+﻿namespace MiCampGatewaySample;
+enum ActivationStatus
 {
     Pending,
     Active,

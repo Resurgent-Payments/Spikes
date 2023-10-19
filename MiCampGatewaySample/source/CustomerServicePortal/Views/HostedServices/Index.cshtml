@@ -1,0 +1,48 @@
+﻿@using CustomerServicePortal.Controllers;
+@using HSP;
+@model HostedServiceForms.Registration;
+@inject HostedServiceRm _rm;
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Hosted Services</h1>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <ul class="list-group">
+                @foreach (var item in _rm.List)
+                {
+                    <li class="list-group-item">
+                        <a asp-controller="HostedServices" asp-action="HostedService" asp-route-hostedServiceId="@item.HostedServiceId">@item.Name</a>
+                    </li>
+                }
+            </ul>
+        </div>
+
+
+        <div class="col">
+            <div class="container-fluid">
+                <div class="row">
+                    <div clas="col">
+                        <form asp-controller="HostedServices" asp-action="Add">
+                            <input type="hidden" name="HostedServiceId" value="@Model.HostedServiceId" />
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input class="form-control" type="text" asp-for="Name" />
+                            </div>
+                            <div class="btn-toolbar">
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary">Add</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
