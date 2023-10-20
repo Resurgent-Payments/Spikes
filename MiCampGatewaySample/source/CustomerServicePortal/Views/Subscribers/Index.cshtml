@@ -1,7 +1,45 @@
-﻿@{
+﻿@using CustomerServicePortal.Controllers;
+@using HSP;
+@model SubscriberForms.Subscribe
+@inject SubscriberRm _rm;
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Subscribers</h1>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+
+            <ul class="list-group">
+                @foreach (var subscriber in _rm.Subscribers)
+                {
+                    <li class="list-group-item">
+                        <a asp-controller="Subscribers" asp-action="Subscriber" asp-route-subscriberId="@subscriber.Name">@subscriber.Name</a>
+                    </li>
+                }
+            </ul>
+
+        </div>
+        <div class="col">
+
+            <form asp-controller="Subscribers" asp-action="Add">
+                @Html.HiddenFor(x => x.SubscriberId);
+                <div class="mb-3">
+                    @Html.LabelFor(x => x.Name, new{ @class="form-label"})
+                    @Html.TextBoxFor(x => x.Name, new{@class="form-control"})
+                </div>
+                <div class="btn-toolbar">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary">Add</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
 </div>

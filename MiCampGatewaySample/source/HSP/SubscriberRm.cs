@@ -13,6 +13,9 @@ namespace HSP
 
         public IReadOnlyList<ListItem> Subscribers => _subscribers.AsReadOnly();
 
+        public bool TryGetDashboard(Guid subscriberId, out Dashboard dashboard) 
+            => _dashboards.TryGetValue(subscriberId, out dashboard);
+
         public SubscriberRm(IConfiguredConnection connection) : base(nameof(SubscriberRm), connection)
         {
             EventStream.Subscribe<SubscriberMsgs.Subscribed>(this);
@@ -22,17 +25,21 @@ namespace HSP
             Start<Subscriber>();
         }
 
-        public void Handle(SubscriberMsgs.Subscribed message)
+        public void Handle(SubscriberMsgs.Subscribed msg)
         {
-            throw new NotImplementedException();
+            _subscribers.Add(new ListItem(msg.SubscriberId, msg.Name));
+            _dashboards.Add(msg.SubscriberId, new Dashboard(msg.SubscriberId, msg.Name));
         }
 
-        public void Handle(SubscriberMsgs.PaymentTokenStored message)
+        public void Handle(SubscriberMsgs.PaymentTokenStored msg)
         {
-            throw new NotImplementedException();
+            if (_dashboards.TryGetValue(msg.SubscriberId, out var dashboard))
+            {
+                dashboard.Add(new StoredToken(msg.StoredPaymentTokenId, msg.CardType, msg.CardLast4));
+            }
         }
 
-        public void Handle(SubscriberMsgs.PaymentTokenRemoved message)
+        public void Handle(SubscriberMsgs.PaymentTokenRemoved msg)
         {
             throw new NotImplementedException();
         }
@@ -52,26 +59,39 @@ namespace HSP
 
         public class Dashboard
         {
+            private readonly List<StoredToken> _tokens = new();
+
+
             public readonly Guid SubscriberId;
             public readonly string Name;
-            public readonly List<StoredToken> Tokens = new List<StoredToken>();
+            public IReadOnlyList<StoredToken> Tokens => _tokens.AsReadOnly();
 
             public Dashboard(Guid subscriberId, string name)
             {
                 SubscriberId = subscriberId;
                 Name = name;
             }
+
+            public void Add(StoredToken token)
+            {
+                _tokens.Add(token);
+            }
+
+            public void Remove(Guid storedPaymentTokenId)
+            {
+                _tokens.RemoveAll(t => t.StoredPaymentTokenId == storedPaymentTokenId);
+            }
         }
 
         public class StoredToken
         {
-            public readonly Guid TokenId;
+            public readonly Guid StoredPaymentTokenId;
             public readonly string CardType;
             public readonly string CardLast4;
 
-            public StoredToken(Guid tokenId, string cardType, string cardLast4)
+            public StoredToken(Guid storedPaymentTokenId, string cardType, string cardLast4)
             {
-                TokenId = tokenId;
+                StoredPaymentTokenId = storedPaymentTokenId;
                 CardType = cardType;
                 CardLast4 = cardLast4;
             }

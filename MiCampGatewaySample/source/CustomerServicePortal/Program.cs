@@ -10,6 +10,8 @@ builder.Services.AddSingleton<HostedServiceRm>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpClient();
+
 
 // reactive domain setup.
 
@@ -31,6 +33,7 @@ builder.Services.AddSingleton<IDispatcher>(services =>
 });
 builder.Services.AddSingleton<ICommandPublisher>(services => services.GetRequiredService<IDispatcher>());
 builder.Services.AddSingleton<HostedServiceRm>();
+builder.Services.AddSingleton<SubscriberRm>();
 
 
 var app = builder.Build();
