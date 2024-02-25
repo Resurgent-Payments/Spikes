@@ -1,4 +1,5 @@
 using MiCamp.TestHost;
+using System.Net;
 using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,10 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 
+ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 builder.Services.AddSingleton(new MiCampAuthenticationDelegatingHandlerOptions
 {
     Host = new Uri("https://gateway.mipaymentchoice.com"),
-    Credential = new MiCampCredential("mcnorthapi1", "MCGws6sP2")
+    Credential = new MiCampCredential("resu5984API", "5d9d435e5b994e83")
 });
 builder.Services.AddTransient<MiCampAuthenticationDelegatingHandler>();
 builder.Services.AddHttpClient("MiCamp", (services, client) =>

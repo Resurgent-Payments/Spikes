@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace MiCamp.TestHost;
@@ -14,10 +15,12 @@ public class MiCampAuthenticationDelegatingHandler : DelegatingHandler
 
     private readonly MiCampAuthenticationDelegatingHandlerOptions _options;
     private readonly HttpClient _httpClient;
+    private readonly ILogger _log;
     private static string _bearerToken = string.Empty;
 
-    public MiCampAuthenticationDelegatingHandler(MiCampAuthenticationDelegatingHandlerOptions options, IHttpClientFactory clientFactory)
+    public MiCampAuthenticationDelegatingHandler(MiCampAuthenticationDelegatingHandlerOptions options, IHttpClientFactory clientFactory, ILoggerFactory loggerFactory)
     {
+        _log = loggerFactory.CreateLogger<MiCampAuthenticationDelegatingHandler>();
         _options = options;
         _httpClient = clientFactory.CreateClient();
         _httpClient.BaseAddress = _options.Host;
@@ -32,6 +35,10 @@ public class MiCampAuthenticationDelegatingHandler : DelegatingHandler
         }
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _bearerToken);
+
+        var reqInfo = JsonSerializer.Serialize(request, _serializerOptions);
+        _log.LogDebug(reqInfo);
+
         var response = await base.SendAsync(request, cancellationToken);
 
         if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized || response.StatusCode == System.Net.HttpStatusCode.Forbidden)
