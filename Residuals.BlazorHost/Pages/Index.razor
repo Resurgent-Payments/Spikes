@@ -1,7 +1,14 @@
 ﻿@page "/"
 
+@inject Residuals.Merchants _merchants
+
 <PageTitle>Index</PageTitle>
 
-<h1>Index page</h1>
+<h1>Merchants</h1>
 
-<p>Start your project here.</p>
+<ul>
+    @foreach (var m in _merchants.ListItems)
+    {
+        <li><a href="/merchants/@m.MerchantId">@m.MerchantName</a></li>
+    }
+</ul>

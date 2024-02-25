@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Residuals": {
+      "commandName": "Project",
+      "commandLineArgs": " import residuals -if \"C:\\Users\\Richard\\Desktop\\Residuals\\RESURGENT_PAYMENTS_2023-04.csv\" -d \"2023-04-01\""
+    }
+  }
+}

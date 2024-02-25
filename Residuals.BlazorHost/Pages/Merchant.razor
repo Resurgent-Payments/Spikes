@@ -1,0 +1,82 @@
+﻿@page "/merchants/{id:guid}"
+
+@inject Residuals.Merchants _merchants
+
+<h2>@Model?.Name</h2>
+<h3>Processor: @Model?.Processor</h3>
+<h3>MID: @Model?.MID</h3>
+
+<LineChart @ref="Dollars" Width="800" Height="400" />
+
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected Residuals.MerchantDetails? Model { get; set; }
+
+    protected LineChart Dollars { get; set; } = default!;
+    protected LineChartOptions ChartOptions { get; set; } = default!;
+    protected ChartData Data { get; set; } = default!;
+
+
+    protected override void OnParametersSet()
+    {
+        Model = _merchants.GetDetails(Id);
+
+        var labels = Model?.AgentPays.Skip(1).Select(ap => ap.Month.ToString("d")).ToList();
+        var dsets = new List<IChartDataset>
+        {
+            // new LineChartDataset
+            // {
+            //     Label = "Volume",
+            //     Data = Model?.Volumes.Select(ap => Convert.ToDouble(ap.Volume)).ToList() ?? [],
+            // },
+            new LineChartDataset
+            {
+                Label = "Transactions",
+                Data = Model?.Transactions.Select(ap => Convert.ToDouble(ap.Transactions)).ToList() ?? [],
+            },
+            // new LineChartDataset
+            // {
+            //     Label = "Revenue",
+            //     Data = Model?.Revenues.Skip(1).Select(ap => Convert.ToDouble(ap.Revenue)).ToList() ?? [],
+            // },
+            // new LineChartDataset
+            // {
+            //     Label = "Expenses",
+            //     Data = Model?.Expenses.Skip(1).Select(ap => Convert.ToDouble(ap.Expenses)).ToList() ?? [],
+            // },
+            // new LineChartDataset
+            // {
+            //     Label = "Net Income",
+            //     Data = Model?.NetIncomes.Skip(1).Select(ap => Convert.ToDouble(ap.NetIncome)).ToList() ?? [],
+            // },
+            new LineChartDataset
+            {
+                Label = "Agent Pay",
+                Data = Model?.AgentPays.Skip(1).Select(ap => Convert.ToDouble(ap.AgentPay)).ToList() ?? [],
+            }
+        };
+
+        Data = new ChartData
+            {
+                Labels = labels,
+                Datasets = dsets
+            };
+
+        ChartOptions = new();
+        ChartOptions.MaintainAspectRatio = true;
+        ChartOptions.Responsive = true;
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Dollars.InitializeAsync(Data, ChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

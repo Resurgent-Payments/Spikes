@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalDataStore", "LocalData
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalDataStore.Tests", "LocalDataStore.Tests\LocalDataStore.Tests.csproj", "{0F503264-6534-4EEE-8AC9-C1D2CD85B93E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Residuals.BlazorHost", "Residuals.BlazorHost\Residuals.BlazorHost.csproj", "{6CC527D8-A1E8-41A7-8E10-0087C788C2F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Residuals.BlazorHost", "Residuals.BlazorHost\Residuals.BlazorHost.csproj", "{6CC527D8-A1E8-41A7-8E10-0087C788C2F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

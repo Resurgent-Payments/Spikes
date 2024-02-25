@@ -40,9 +40,7 @@ public class Merchant : AggregateRoot
         Ensure.GreaterThanOrEqualTo(0, volume, nameof(volume));
         Ensure.GreaterThanOrEqualTo(0, revenue, nameof(revenue));
         Ensure.GreaterThanOrEqualTo(0, expenses, nameof(expenses));
-        Ensure.GreaterThanOrEqualTo(0, netIncome, nameof(netIncome));
         Ensure.GreaterThanOrEqualTo(0, agentSplit, nameof(agentSplit));
-        Ensure.GreaterThanOrEqualTo(0, agentPay, nameof(agentPay));
 
         if (_agentSplit != agentSplit)
         {
@@ -50,10 +48,12 @@ public class Merchant : AggregateRoot
         }
 
         var expectedNetIncome = revenue - expenses;
-        var expectedAgentPay = expectedNetIncome * _agentSplit;
+        var expectedAgentPay = Math.Round(expectedNetIncome * _agentSplit, 2, MidpointRounding.ToZero);
+
+        var agentPayDiff = Math.Abs(agentPay - expectedAgentPay);
 
         if (netIncome != expectedNetIncome) { throw new Exception($"Net income does not balance.  Expected: {expectedNetIncome} Actual: {netIncome}"); }
-        if (agentPay != expectedAgentPay) { throw new Exception($"Agent pay does not balance.  Expected: {expectedAgentPay} Actual: {agentPay}"); }
+        if (agentPayDiff > 0.01M) { throw new Exception($"Agent pay does not balance.  Expected: {expectedAgentPay} Actual: {agentPay}"); }
 
         Raise(new MerchantMsgs.ResidualReceived(Id, month, volume, transactions, revenue, expenses));
     }
