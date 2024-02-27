@@ -1,0 +1,47 @@
+﻿<h3>Residuals (per-month)</h3>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th class="text-center">Month</th>
+            <th class="text-center">Volume</th>
+            <th class="text-center">Transactions</th>
+            <th class="text-center">Revenue</th>
+            <th class="text-center">Expenses</th>
+            <th class="text-center">Net Income</th>
+            <th class="text-center">Agent Pay</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var received in ResidualsTable ?? [])
+        {
+            <tr>
+                <td class="text-center">@received.Month.ToShortDateString()</td>
+                <td class="text-end">@received.Volume.ToString("N2")</td>
+                <td class="text-end">@received.Transactions</td>
+                <td class="text-end">@received.Revenue.ToString("N2")</td>
+                <td class="text-end">@received.Expenses.ToString("N2")</td>
+                <td class="text-end">@received.NetIncome.ToString("N2")</td>
+                <td class="text-end">@received.AgentPay.ToString("N2")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    [Inject]
+    protected Residuals.Merchants? MerchantsRm { get; set; }
+
+    protected IReadOnlyList<MerchantDetails.ResidualsForMonth>? ResidualsTable { get; set; }
+
+    [Parameter]
+    public Guid MerchantId { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        ResidualsTable = MerchantsRm!.GetDetails(MerchantId).Residuals;
+        StateHasChanged();
+    }
+}

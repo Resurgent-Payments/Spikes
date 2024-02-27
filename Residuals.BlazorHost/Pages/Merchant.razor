@@ -1,4 +1,5 @@
 ﻿@page "/merchants/{id:guid}"
+@using Residuals.BlazorHost.Pages.MerchantComponents
 
 @inject Residuals.Merchants _merchants
 
@@ -6,7 +7,14 @@
 <h3>Processor: @Model?.Processor</h3>
 <h3>MID: @Model?.MID</h3>
 
-<LineChart @ref="Dollars" Width="800" Height="400" />
+<div class="row">
+    <div class="col">
+        <LineChart @ref="Dollars" Width="800" Height="400" />
+    </div>
+    <div class="col">
+        <MonthlyResidualGrid MerchantId="@Id" />
+    </div>
+</div>
 
 
 @code {

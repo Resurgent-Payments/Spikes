@@ -20,6 +20,10 @@ public class MerchantDetails : ReadModelBase,
     public List<(DateOnly Month, decimal NetIncome)> NetIncomes = [];
     public List<(DateOnly Month, decimal AgentPay)> AgentPays = [];
 
+
+    private readonly List<ResidualsForMonth> _residuals = new();
+    public IReadOnlyList<ResidualsForMonth> Residuals => _residuals.AsReadOnly();
+
     public MerchantDetails(Guid merchantId, IConfiguredConnection connection) : base(nameof(MerchantDetails), connection)
     {
         EventStream.Subscribe<MerchantMsgs.Opened>(this);
@@ -56,9 +60,12 @@ public class MerchantDetails : ReadModelBase,
         Transactions.Add((msg.Month, msg.Transactions));
         Revenues.Add((msg.Month, msg.Revenue));
         Expenses.Add((msg.Month, msg.Expenses));
-        NetIncomes.Add((msg.Month, msg.Revenue - msg.Expenses));
+        NetIncomes.Add((msg.Month, netIncome));
         AgentPays.Add((msg.Month, agentPay));
+
+        _residuals.Add(new ResidualsForMonth(msg.Month, msg.Volume, msg.Transactions, msg.Revenue, msg.Expenses, netIncome, agentPay));
     }
 
     public record SplitRate(DateOnly Month, decimal AgentSplit);
+    public record ResidualsForMonth(DateOnly Month, decimal Volume, uint Transactions, decimal  Revenue, decimal Expenses, decimal NetIncome, decimal AgentPay);
 }

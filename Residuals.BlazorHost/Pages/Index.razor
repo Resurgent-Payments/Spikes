@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Residuals.BlazorHost.Pages.MerchantComponents
 
 @inject Residuals.Merchants _merchants
 
@@ -6,9 +7,8 @@
 
 <h1>Merchants</h1>
 
-<ul>
-    @foreach (var m in _merchants.ListItems)
-    {
-        <li><a href="/merchants/@m.MerchantId">@m.MerchantName</a></li>
-    }
-</ul>
+@foreach (var m in _merchants.ListItems)
+{
+    <h2><a href="/merchants/@m.MerchantId">@m.MerchantName</a></h2>
+    <MonthlyResidualGrid MerchantId="@m.MerchantId" />
+}
